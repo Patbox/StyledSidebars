@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "styled-sidebars",
+  "version": "${version}",
+  "name": "Styled Sidebars",
+  "description": "Customisable sidebars for your Minecraft server!",
+  "authors": [
+    "Patbox"
+  ],
+  "contact": {
+    "homepage": "https://pb4.eu",
+    "sources": "https://github.com/Patbox/StyledSidebars"
+  },
+  "license": "LGPLv3",
+  "environment": "*",
+  "icon": "assets/styled_sidebars/icon.png",
+  "entrypoints": {
+    "main": [
+      "eu.pb4.styledsidebars.ModInit"
+    ],
+    "preLaunch": ["eu.pb4.styledsidebars.CardboardWarning"]
+  },
+  "depends": {
+    "minecraft": ">=1.19.3"
+  }
+}
