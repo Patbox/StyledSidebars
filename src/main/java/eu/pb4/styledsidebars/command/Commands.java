@@ -6,8 +6,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import eu.pb4.playerdata.api.PlayerDataApi;
-import eu.pb4.sidebars.api.SidebarUtils;
-import eu.pb4.styledsidebars.CustomSidebar;
 import eu.pb4.styledsidebars.GenericModInfo;
 import eu.pb4.styledsidebars.ModInit;
 import eu.pb4.styledsidebars.config.ConfigManager;

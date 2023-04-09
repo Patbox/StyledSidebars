@@ -1,29 +1,25 @@
 package eu.pb4.styledsidebars;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.node.TextNode;
 import eu.pb4.sidebars.api.Sidebar;
-import eu.pb4.sidebars.api.SidebarInterface;
-import eu.pb4.sidebars.api.SidebarUtils;
-import eu.pb4.sidebars.api.lines.LineBuilder;
 import eu.pb4.sidebars.api.lines.SidebarLine;
 import eu.pb4.styledsidebars.config.SidebarHandler;
+import eu.pb4.styledsidebars.utils.SidebarUtils;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomSidebar implements SidebarInterface {
+public class CustomSidebar extends Sidebar {
+
     private SidebarHandler handler;
     public final ServerPlayNetworkHandler player;
     private int pos = 0;
     private int page = 0;
-    private int title = 0;
 
-    public CustomSidebar(SidebarHandler handler, ServerPlayNetworkHandler player) {
+    public CustomSidebar(final SidebarHandler handler, final ServerPlayNetworkHandler player) {
+        super(handler.title.get(0).toText(PlaceholderContext.of(player.player).asParserContext(), true), Priority.LOW);
         this.handler = handler;
         this.player = player;
 
@@ -40,20 +36,6 @@ public class CustomSidebar implements SidebarInterface {
     @Override
     public int getUpdateRate() {
         return this.isActive() ? this.handler.definition.updateRate : 20;
-    }
-
-    @Override
-    public Text getTitleFor(ServerPlayNetworkHandler handler) {
-        var title = (this.title / this.handler.definition.titleChange);
-
-        if (title >= this.handler.title.size()) {
-            title = 0;
-            this.title = 0;
-        }
-
-        this.title++;
-
-        return this.handler.title.get(title).toText(PlaceholderContext.of(handler.player).asParserContext(), true);
     }
 
     @Override
@@ -128,16 +110,12 @@ public class CustomSidebar implements SidebarInterface {
         return this.handler != null && !this.handler.isEmpty();
     }
 
-    @Override
-    public void disconnected(ServerPlayNetworkHandler handler) {}
-
     public void setStyle(SidebarHandler handler) {
         if (this.handler == handler) {
             return;
         }
 
         this.pos = 0;
-        this.title = 0;
         this.page = 0;
         if (this.isActive()) {
             this.handler = handler;
@@ -150,7 +128,7 @@ public class CustomSidebar implements SidebarInterface {
             this.handler = handler;
             if (handler != null) {
                 SidebarUtils.addSidebar(this.player, this);
-                SidebarUtils.requestStateUpdate(this.player);
+                SidebarUtils.requestStateUpdate(this.player, this);
                 SidebarUtils.updateTexts(this.player, this);
             }
         }
