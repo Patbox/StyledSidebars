@@ -1,13 +1,10 @@
 package eu.pb4.styledsidebars;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.node.TextNode;
 import eu.pb4.sidebars.api.Sidebar;
 import eu.pb4.sidebars.api.SidebarInterface;
 import eu.pb4.sidebars.api.SidebarUtils;
-import eu.pb4.sidebars.api.lines.LineBuilder;
 import eu.pb4.sidebars.api.lines.SidebarLine;
 import eu.pb4.styledsidebars.config.SidebarHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -113,12 +110,12 @@ public class CustomSidebar implements SidebarInterface {
             }
         }
 
-        var out = new ArrayList<SidebarLine>();
+        var out = new ArrayList<SidebarLine>(list.size());
 
         var context = PlaceholderContext.of(handler.player).asParserContext();
         int size = list.size();
         for (var node : list) {
-            out.add(SidebarLine.create(--size, node.toText(context, true)));
+            out.add(SidebarLine.create(--size, node.toText(context)));
         }
         return out;
     }
