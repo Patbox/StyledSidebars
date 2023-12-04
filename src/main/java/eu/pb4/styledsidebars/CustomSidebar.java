@@ -7,8 +7,11 @@ import eu.pb4.sidebars.api.SidebarInterface;
 import eu.pb4.sidebars.api.SidebarUtils;
 import eu.pb4.sidebars.api.lines.SidebarLine;
 import eu.pb4.styledsidebars.config.SidebarHandler;
+import net.minecraft.scoreboard.number.BlankNumberFormat;
+import net.minecraft.scoreboard.number.FixedNumberFormat;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
+import net.minecraft.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +63,7 @@ public class CustomSidebar implements SidebarInterface {
 
     @Override
     public List<SidebarLine> getLinesFor(ServerPlayNetworkHandler handler) {
-        List<TextNode> list = new ArrayList<>();
+        List<Pair<TextNode, TextNode>> list = new ArrayList<>();
 
         {
             List<SidebarHandler.Line> lines;
@@ -81,9 +84,7 @@ public class CustomSidebar implements SidebarInterface {
 
             for (var line : lines) {
                 if (line.hasPermission(handler.player)) {
-                    for (var node : line.textNode()) {
-                        list.add(node);
-                    }
+                    list.addAll(line.values());
                 }
             }
         }
@@ -96,7 +97,7 @@ public class CustomSidebar implements SidebarInterface {
                 if (index >= list.size()) {
                     this.pos = 0;
                 }
-                var looping = new ArrayList<TextNode>(list.size() * 2);
+                var looping = new ArrayList<Pair<TextNode, TextNode>>(list.size() * 2);
                 looping.addAll(list);
                 looping.addAll(list);
                 list = looping.subList(index, index + 14);
@@ -115,7 +116,9 @@ public class CustomSidebar implements SidebarInterface {
         var context = PlaceholderContext.of(handler.player).asParserContext();
         int size = list.size();
         for (var node : list) {
-            out.add(SidebarLine.create(--size, node.toText(context)));
+            out.add(SidebarLine.create(--size, node.getLeft().toText(context), node.getRight() == TextNode.empty()
+                    ? BlankNumberFormat.INSTANCE : new FixedNumberFormat(node.getRight().toText(context)))
+            );
         }
         return out;
     }

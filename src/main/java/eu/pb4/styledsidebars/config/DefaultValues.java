@@ -32,6 +32,24 @@ public class DefaultValues {
         return data;
     }
 
+    public static SidebarDefinition exampleStyleDataWithRight() {
+        SidebarDefinition data = new SidebarDefinition();
+        data.configName = "Right Text";
+        data.title = List.of(
+                "<b><#66d1f2>Styled Sidebars on The Right");
+        data.lines = List.of(
+                SidebarDefinition.Line.of(""),
+                SidebarDefinition.Line.of("<gray>» <white>Time: ", "<yellow>%server:time%"),
+                SidebarDefinition.Line.of("<gray>» <white>Players: ", "<yellow>%server:online%</yellow>/<orange>%server:max_players%"),
+                SidebarDefinition.Line.of("<gray>» <white>Ping: ", "%player:ping_colored% <yellow>ms"),
+                SidebarDefinition.Line.of(""),
+                SidebarDefinition.Line.of("<red>Please change config in"),
+                SidebarDefinition.Line.of("<red><underline>/config/styled-sidebars")
+        );
+
+        return data;
+    }
+
     public static SidebarDefinition exampleStyleAnimatedData() {
         SidebarDefinition data = new SidebarDefinition();
         data.configName = "Scrolling example";

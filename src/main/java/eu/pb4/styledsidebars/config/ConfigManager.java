@@ -49,6 +49,7 @@ public class ConfigManager {
             if (Files.notExists(configStyle)) {
                 Files.createDirectories(configStyle);
                 Files.writeString(configStyle.resolve("default.json"), GSON.toJson(DefaultValues.exampleStyleData()));
+                Files.writeString(configStyle.resolve("right_text.json"), GSON.toJson(DefaultValues.exampleStyleDataWithRight()));
                 Files.writeString(configStyle.resolve("scrolling.json"), GSON.toJson(DefaultValues.exampleStyleAnimatedData()));
                 Files.writeString(configStyle.resolve("pages.json"), GSON.toJson(DefaultValues.examplePagesStyleData()));
                 Files.writeString(configStyle.resolve("disable.json"), GSON.toJson(DefaultValues.disabledStyleData()));
