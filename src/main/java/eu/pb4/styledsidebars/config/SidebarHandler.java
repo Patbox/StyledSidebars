@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class SidebarHandler {
-    private static final NodeParser PARSER = NodeParser.merge(TextParserV1.DEFAULT, Placeholders.DEFAULT_PLACEHOLDER_PARSER, StaticPreParser.INSTANCE);
     public static final SidebarHandler FALLBACK = new SidebarHandler("", DefaultValues.EMPTY_STYLE);
 
     public final SidebarDefinition definition;
@@ -34,7 +33,7 @@ public class SidebarHandler {
     }
 
     public void updateLines() {
-        this.title = definition.title.stream().map(PARSER::parseNode).toList();
+        this.title = definition.title.stream().map(Config.PARSER::parseNode).toList();
         if (this.title.isEmpty()) {
             this.title = List.of(TextNode.empty());
         }
@@ -52,7 +51,7 @@ public class SidebarHandler {
     }
 
     private static Line toLine(SidebarDefinition.Line line) {
-        return new Line(line.values().stream().map(x -> new Pair<>(PARSER.parseNode(x.getLeft()), PARSER.parseNode(x.getRight()))).toList(), line.require());
+        return new Line(line.values().stream().map(x -> new Pair<>(Config.PARSER.parseNode(x.getLeft()), Config.PARSER.parseNode(x.getRight()))).toList(), line.require());
     }
 
     public boolean hasPermission(ServerPlayerEntity player) {
