@@ -29,6 +29,7 @@ public class Config {
             .quickText()
             .staticPreParsing()
             .build();
+    public static final Config DEFAULT = new Config(new ConfigData());
 
     public final ConfigData configData;
     public final TextNode switchMessage;

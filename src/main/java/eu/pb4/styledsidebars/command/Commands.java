@@ -68,7 +68,7 @@ public class Commands {
     }
 
     private static int reloadConfig(CommandContext<ServerCommandSource> context) {
-        if (ConfigManager.loadConfig()) {
+        if (ConfigManager.loadConfig(context.getSource().getRegistryManager())) {
             context.getSource().sendFeedback(() -> Text.literal("Reloaded config!"), false);
             for (var entry : ModInit.SIDEBARS.entrySet()) {
                 var type = PlayerDataApi.getGlobalDataFor(entry.getKey().player, ModInit.STORAGE);

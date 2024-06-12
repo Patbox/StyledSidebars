@@ -24,7 +24,7 @@ public class ModInit implements ModInitializer {
 
     public static final Map<ServerPlayNetworkHandler, CustomSidebar> SIDEBARS = new HashMap<>();
 
-    public static final Identifier STORAGE = new Identifier("styled-sidebars","selected");
+    public static final Identifier STORAGE = Identifier.of("styled-sidebars","selected");
 
     @Override
     public void onInitialize() {
@@ -36,7 +36,7 @@ public class ModInit implements ModInitializer {
         Commands.register();
         ServerLifecycleEvents.SERVER_STARTING.register((s) -> {
             CardboardWarning.checkAndAnnounce();
-            ConfigManager.loadConfig();
+            ConfigManager.loadConfig(s.getRegistryManager());
         });
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -58,6 +58,6 @@ public class ModInit implements ModInitializer {
     }
 
     public static Identifier id(String path) {
-        return new Identifier(ID, path);
+        return Identifier.of(ID, path);
     }
 }

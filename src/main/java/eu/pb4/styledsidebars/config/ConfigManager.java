@@ -7,6 +7,7 @@ import eu.pb4.predicate.api.MinecraftPredicate;
 import eu.pb4.styledsidebars.ModInit;
 import eu.pb4.styledsidebars.config.data.ConfigData;
 import eu.pb4.styledsidebars.config.data.SidebarDefinition;
+import net.minecraft.registry.RegistryWrapper;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,12 +21,7 @@ import java.util.LinkedHashMap;
 
 
 public class ConfigManager {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().setLenient()
-            .registerTypeHierarchyAdapter(MinecraftPredicate.class, GsonPredicateSerializer.INSTANCE)
-            .registerTypeHierarchyAdapter(SidebarDefinition.Line.class, new SidebarDefinition.Line.Serializer())
-            .create();
-
-    private static Config CONFIG;
+    private static Config CONFIG = Config.DEFAULT;
     private static boolean ENABLED = false;
     private static final LinkedHashMap<String, SidebarHandler> STYLES = new LinkedHashMap<>();
 
@@ -37,22 +33,26 @@ public class ConfigManager {
         return ENABLED;
     }
 
-    public static boolean loadConfig() {
+    public static boolean loadConfig(RegistryWrapper.WrapperLookup lookup) {
         ENABLED = false;
 
         CONFIG = null;
         try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().setLenient()
+                    .registerTypeHierarchyAdapter(MinecraftPredicate.class, GsonPredicateSerializer.create(lookup))
+                    .registerTypeHierarchyAdapter(SidebarDefinition.Line.class, new SidebarDefinition.Line.Serializer())
+                    .create();
 
             var configStyle = Paths.get("", "config", "styled-sidebars", "styles");
             var configDir = Paths.get("", "config", "styled-sidebars");
 
             if (Files.notExists(configStyle)) {
                 Files.createDirectories(configStyle);
-                Files.writeString(configStyle.resolve("default.json"), GSON.toJson(DefaultValues.exampleStyleData()));
-                Files.writeString(configStyle.resolve("right_text.json"), GSON.toJson(DefaultValues.exampleStyleDataWithRight()));
-                Files.writeString(configStyle.resolve("scrolling.json"), GSON.toJson(DefaultValues.exampleStyleAnimatedData()));
-                Files.writeString(configStyle.resolve("pages.json"), GSON.toJson(DefaultValues.examplePagesStyleData()));
-                Files.writeString(configStyle.resolve("disable.json"), GSON.toJson(DefaultValues.disabledStyleData()));
+                Files.writeString(configStyle.resolve("default.json"), gson.toJson(DefaultValues.exampleStyleData()));
+                Files.writeString(configStyle.resolve("right_text.json"), gson.toJson(DefaultValues.exampleStyleDataWithRight()));
+                Files.writeString(configStyle.resolve("scrolling.json"), gson.toJson(DefaultValues.exampleStyleAnimatedData()));
+                Files.writeString(configStyle.resolve("pages.json"), gson.toJson(DefaultValues.examplePagesStyleData()));
+                Files.writeString(configStyle.resolve("disable.json"), gson.toJson(DefaultValues.disabledStyleData()));
             }
 
             ConfigData config;
@@ -61,13 +61,13 @@ public class ConfigManager {
 
 
             if (Files.exists(configFile)) {
-                config = GSON.fromJson(new InputStreamReader(Files.newInputStream(configFile), StandardCharsets.UTF_8), ConfigData.class);
+                config = gson.fromJson(new InputStreamReader(Files.newInputStream(configFile), StandardCharsets.UTF_8), ConfigData.class);
             } else {
                 config = new ConfigData();
             }
 
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(configFile), StandardCharsets.UTF_8));
-            writer.write(GSON.toJson(config));
+            writer.write(gson.toJson(config));
             writer.close();
 
             STYLES.clear();
@@ -76,7 +76,7 @@ public class ConfigManager {
             Files.list(configStyle).filter((path) -> path.toString().endsWith(".json")).forEach((fileName) -> {
                 var id = fileName.getFileName().toString();
                 try {
-                    SidebarHandler style = new SidebarHandler(id.substring(0, id.length() - ".json".length()), GSON.fromJson(Files.readString(fileName, StandardCharsets.UTF_8), SidebarDefinition.class));
+                    SidebarHandler style = new SidebarHandler(id.substring(0, id.length() - ".json".length()), gson.fromJson(Files.readString(fileName, StandardCharsets.UTF_8), SidebarDefinition.class));
                     STYLES.put(style.id, style);
                 } catch (IOException e) {
                     e.printStackTrace();
