@@ -43,7 +43,7 @@ public class ModInit implements ModInitializer {
             var type = PlayerDataApi.getGlobalDataFor(handler.player, STORAGE);
             String id = ConfigManager.getDefault();
             if (type instanceof NbtString nbtString) {
-                id = nbtString.asString();
+                id = nbtString.value();
             }
 
             var def = ConfigManager.getStyle(id);

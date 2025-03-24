@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 import eu.pb4.predicate.api.GsonPredicateSerializer;
 import eu.pb4.predicate.api.MinecraftPredicate;
 import eu.pb4.predicate.api.PredicateRegistry;
+import eu.pb4.styledsidebars.ModInit;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,7 +75,7 @@ public class SidebarDefinition {
             return new Line(List.of(new Pair<>(left, right)), predicate);
         }
 
-        public static final class Serializer implements JsonSerializer<Line>, JsonDeserializer<Line> {
+        public record Serializer(RegistryWrapper.WrapperLookup lookup) implements JsonSerializer<Line>, JsonDeserializer<Line> {
             @Override
             public Line deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 if (json.isJsonPrimitive()) {
@@ -90,7 +92,7 @@ public class SidebarDefinition {
 
                 var obj = json.getAsJsonObject();
                 var require = obj.get("require");
-                var predicate = require == null ? null : PredicateRegistry.decode(require);
+                var predicate = require == null ? null : PredicateRegistry.decode(lookup, require);
 
                 var values = obj.get("value");
                 if (values == null) {
@@ -145,7 +147,7 @@ public class SidebarDefinition {
                     }
 
                     if (src.require != null) {
-                        obj.add("require", GsonPredicateSerializer.INSTANCE.serialize(src.require, null, null));
+                        obj.add("require", GsonPredicateSerializer.create(lookup).serialize(src.require, null, null));
                     }
                     return obj;
                 }

@@ -40,7 +40,7 @@ public class ConfigManager {
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().setLenient()
                     .registerTypeHierarchyAdapter(MinecraftPredicate.class, GsonPredicateSerializer.create(lookup))
-                    .registerTypeHierarchyAdapter(SidebarDefinition.Line.class, new SidebarDefinition.Line.Serializer())
+                    .registerTypeHierarchyAdapter(SidebarDefinition.Line.class, new SidebarDefinition.Line.Serializer(lookup))
                     .create();
 
             var configStyle = Paths.get("", "config", "styled-sidebars", "styles");

@@ -74,7 +74,7 @@ public class Commands {
                 var type = PlayerDataApi.getGlobalDataFor(entry.getKey().player, ModInit.STORAGE);
                 String id = ConfigManager.getDefault();
                 if (type instanceof NbtString nbtString) {
-                    id = nbtString.asString();
+                    id = nbtString.value();
                 }
 
                 var def = ConfigManager.getStyle(id);
