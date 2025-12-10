@@ -6,13 +6,13 @@ import eu.pb4.predicate.api.GsonPredicateSerializer;
 import eu.pb4.predicate.api.MinecraftPredicate;
 import eu.pb4.predicate.api.PredicateRegistry;
 import eu.pb4.styledsidebars.ModInit;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.util.Tuple;
 
 public class SidebarDefinition {
     @SerializedName("require")
@@ -54,28 +54,28 @@ public class SidebarDefinition {
     }
 
 
-    public record Line(List<Pair<String, String>> values, @Nullable MinecraftPredicate require) {
+    public record Line(List<Tuple<String, String>> values, @Nullable MinecraftPredicate require) {
         public static Line of(String line) {
-            return new Line(List.of(new Pair<>(line, "")), null);
+            return new Line(List.of(new Tuple<>(line, "")), null);
         }
 
         public static Line of(String line, MinecraftPredicate predicate) {
-            return new Line(List.of(new Pair<>(line, "")), predicate);
+            return new Line(List.of(new Tuple<>(line, "")), predicate);
         }
 
         public static Line of(List<String> line, MinecraftPredicate predicate) {
-            return new Line(line.stream().map(x -> new Pair<>(x, "")).toList(), predicate);
+            return new Line(line.stream().map(x -> new Tuple<>(x, "")).toList(), predicate);
         }
 
         public static Line of(String left, String right) {
-            return new Line(List.of(new Pair<>(left, right)), null);
+            return new Line(List.of(new Tuple<>(left, right)), null);
         }
 
         public static Line of(String left, String right, MinecraftPredicate predicate) {
-            return new Line(List.of(new Pair<>(left, right)), predicate);
+            return new Line(List.of(new Tuple<>(left, right)), predicate);
         }
 
-        public record Serializer(RegistryWrapper.WrapperLookup lookup) implements JsonSerializer<Line>, JsonDeserializer<Line> {
+        public record Serializer(HolderLookup.Provider lookup) implements JsonSerializer<Line>, JsonDeserializer<Line> {
             @Override
             public Line deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 if (json.isJsonPrimitive()) {
@@ -99,16 +99,16 @@ public class SidebarDefinition {
                     values = obj.get("values");
                 }
 
-                List<Pair<String, String>> list = new ArrayList<>();
+                List<Tuple<String, String>> list = new ArrayList<>();
 
                 if (values instanceof JsonArray array) {
-                    array.forEach(x -> list.add(new Pair<>(x.getAsString(), "")));
+                    array.forEach(x -> list.add(new Tuple<>(x.getAsString(), "")));
                 } else if (values instanceof JsonObject array) {
                     array.asMap().forEach((left, right) -> {
-                        list.add(new Pair<>(left, right.getAsString()));
+                        list.add(new Tuple<>(left, right.getAsString()));
                     });
                 }  else {
-                    list.add(new Pair<>(values.getAsString(), ""));
+                    list.add(new Tuple<>(values.getAsString(), ""));
                 }
 
 
@@ -118,30 +118,30 @@ public class SidebarDefinition {
             @Override
             public JsonElement serialize(Line src, Type typeOfSrc, JsonSerializationContext context) {
                 if (src.require == null && src.values.size() == 1) {
-                    if (src.values.get(0).getRight().isEmpty()) {
-                        return new JsonPrimitive(src.values.get(0).getLeft());
+                    if (src.values.get(0).getB().isEmpty()) {
+                        return new JsonPrimitive(src.values.get(0).getA());
                     } else {
                         var arr = new JsonArray();
-                        arr.add(src.values.get(0).getLeft());
-                        arr.add(src.values.get(0).getRight());
+                        arr.add(src.values.get(0).getA());
+                        arr.add(src.values.get(0).getB());
                         return arr;
                     }
                 } else {
                     var obj = new JsonObject();
-                    if (src.values.stream().allMatch(x -> x.getRight().isEmpty())) {
+                    if (src.values.stream().allMatch(x -> x.getB().isEmpty())) {
                         if (src.values.size() == 1) {
-                            obj.add("values", new JsonPrimitive(src.values.get(0).getLeft()));
+                            obj.add("values", new JsonPrimitive(src.values.get(0).getA()));
                         } else {
                             var ar = new JsonArray();
                             for (var l : src.values) {
-                                ar.add(l.getLeft());
+                                ar.add(l.getA());
                             }
                             obj.add("values", ar);
                         }
                     } else {
                         var ar = new JsonObject();
                         for (var l : src.values) {
-                            ar.addProperty(l.getLeft(), l.getRight());
+                            ar.addProperty(l.getA(), l.getB());
                         }
                         obj.add("values", ar);
                     }

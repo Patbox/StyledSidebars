@@ -8,9 +8,9 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.util.Identifier;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,9 +22,9 @@ public class ModInit implements ModInitializer {
     public static final String ID = "styled-sidebars";
 
 
-    public static final Map<ServerPlayNetworkHandler, CustomSidebar> SIDEBARS = new HashMap<>();
+    public static final Map<ServerGamePacketListenerImpl, CustomSidebar> SIDEBARS = new HashMap<>();
 
-    public static final Identifier STORAGE = Identifier.of("styled-sidebars","selected");
+    public static final Identifier STORAGE = Identifier.fromNamespaceAndPath("styled-sidebars","selected");
 
     @Override
     public void onInitialize() {
@@ -36,13 +36,13 @@ public class ModInit implements ModInitializer {
         Commands.register();
         ServerLifecycleEvents.SERVER_STARTING.register((s) -> {
             CardboardWarning.checkAndAnnounce();
-            ConfigManager.loadConfig(s.getRegistryManager());
+            ConfigManager.loadConfig(s.registryAccess());
         });
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             var type = PlayerDataApi.getGlobalDataFor(handler.player, STORAGE);
             String id = ConfigManager.getDefault();
-            if (type instanceof NbtString nbtString) {
+            if (type instanceof StringTag nbtString) {
                 id = nbtString.value();
             }
 
@@ -58,6 +58,6 @@ public class ModInit implements ModInitializer {
     }
 
     public static Identifier id(String path) {
-        return Identifier.of(ID, path);
+        return Identifier.fromNamespaceAndPath(ID, path);
     }
 }

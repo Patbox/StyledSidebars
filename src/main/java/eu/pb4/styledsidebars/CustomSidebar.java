@@ -7,23 +7,22 @@ import eu.pb4.sidebars.api.SidebarInterface;
 import eu.pb4.sidebars.api.SidebarUtils;
 import eu.pb4.sidebars.api.lines.SidebarLine;
 import eu.pb4.styledsidebars.config.SidebarHandler;
-import net.minecraft.scoreboard.number.BlankNumberFormat;
-import net.minecraft.scoreboard.number.FixedNumberFormat;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.text.Text;
-import net.minecraft.util.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.numbers.BlankFormat;
+import net.minecraft.network.chat.numbers.FixedFormat;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.util.Tuple;
 
 public class CustomSidebar implements SidebarInterface {
     private SidebarHandler handler;
-    public final ServerPlayNetworkHandler player;
+    public final ServerGamePacketListenerImpl player;
     private int pos = 0;
     private int page = 0;
     private int title = 0;
 
-    public CustomSidebar(SidebarHandler handler, ServerPlayNetworkHandler player) {
+    public CustomSidebar(SidebarHandler handler, ServerGamePacketListenerImpl player) {
         this.handler = handler;
         this.player = player;
 
@@ -43,7 +42,7 @@ public class CustomSidebar implements SidebarInterface {
     }
 
     @Override
-    public Text getTitleFor(ServerPlayNetworkHandler handler) {
+    public Component getTitleFor(ServerGamePacketListenerImpl handler) {
         var title = (this.title / this.handler.definition.titleChange);
 
         if (title >= this.handler.title.size()) {
@@ -62,8 +61,8 @@ public class CustomSidebar implements SidebarInterface {
     }
 
     @Override
-    public List<SidebarLine> getLinesFor(ServerPlayNetworkHandler handler) {
-        List<Pair<TextNode, TextNode>> list = new ArrayList<>();
+    public List<SidebarLine> getLinesFor(ServerGamePacketListenerImpl handler) {
+        List<Tuple<TextNode, TextNode>> list = new ArrayList<>();
 
         {
             List<SidebarHandler.Line> lines;
@@ -97,7 +96,7 @@ public class CustomSidebar implements SidebarInterface {
                 if (index >= list.size()) {
                     this.pos = 0;
                 }
-                var looping = new ArrayList<Pair<TextNode, TextNode>>(list.size() * 2);
+                var looping = new ArrayList<Tuple<TextNode, TextNode>>(list.size() * 2);
                 looping.addAll(list);
                 looping.addAll(list);
                 list = looping.subList(index, index + 14);
@@ -116,8 +115,8 @@ public class CustomSidebar implements SidebarInterface {
         var context = PlaceholderContext.of(handler.player).asParserContext();
         int size = list.size();
         for (var node : list) {
-            out.add(SidebarLine.create(--size, node.getLeft().toText(context), node.getRight() == TextNode.empty()
-                    ? BlankNumberFormat.INSTANCE : new FixedNumberFormat(node.getRight().toText(context)))
+            out.add(SidebarLine.create(--size, node.getA().toText(context), node.getB() == TextNode.empty()
+                    ? BlankFormat.INSTANCE : new FixedFormat(node.getB().toText(context)))
             );
         }
         return out;
@@ -129,7 +128,7 @@ public class CustomSidebar implements SidebarInterface {
     }
 
     @Override
-    public void disconnected(ServerPlayNetworkHandler handler) {}
+    public void disconnected(ServerGamePacketListenerImpl handler) {}
 
     public void setStyle(SidebarHandler handler) {
         if (this.handler == handler) {

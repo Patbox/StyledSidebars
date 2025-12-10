@@ -5,16 +5,15 @@ import eu.pb4.placeholders.api.node.DynamicTextNode;
 import eu.pb4.placeholders.api.node.TextNode;
 import eu.pb4.placeholders.api.parsers.*;
 import eu.pb4.styledsidebars.config.data.ConfigData;
-
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.function.Function;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 
 public class Config {
-    public static final ParserContext.Key<Function<String, @Nullable Text>> KEY = DynamicTextNode.key("styled_sidebars");
+    public static final ParserContext.Key<Function<String, @Nullable Component>> KEY = DynamicTextNode.key("styled_sidebars");
     public static final NodeParser DYNAMIC_PARSER = NodeParser.builder()
             .globalPlaceholders()
             .simplifiedTextFormat()
@@ -33,7 +32,7 @@ public class Config {
 
     public final ConfigData configData;
     public final TextNode switchMessage;
-    public final Text unknownStyleMessage;
+    public final Component unknownStyleMessage;
 
 
     public Config(ConfigData data) {
@@ -42,7 +41,7 @@ public class Config {
         this.unknownStyleMessage = PARSER.parseText(data.messages.unknownStyle, ParserContext.of());
     }
 
-    public Text getSwitchMessage(ServerPlayerEntity player, String target) {
-        return this.switchMessage.toText(ParserContext.of(KEY, Map.of("style", Text.literal(target))::get));
+    public Component getSwitchMessage(ServerPlayer player, String target) {
+        return this.switchMessage.toText(ParserContext.of(KEY, Map.of("style", Component.literal(target))::get));
     }
 }

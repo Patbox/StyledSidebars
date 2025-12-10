@@ -7,8 +7,6 @@ import eu.pb4.predicate.api.MinecraftPredicate;
 import eu.pb4.styledsidebars.ModInit;
 import eu.pb4.styledsidebars.config.data.ConfigData;
 import eu.pb4.styledsidebars.config.data.SidebarDefinition;
-import net.minecraft.registry.RegistryWrapper;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import net.minecraft.core.HolderLookup;
 
 
 public class ConfigManager {
@@ -33,7 +32,7 @@ public class ConfigManager {
         return ENABLED;
     }
 
-    public static boolean loadConfig(RegistryWrapper.WrapperLookup lookup) {
+    public static boolean loadConfig(HolderLookup.Provider lookup) {
         ENABLED = false;
 
         CONFIG = null;
