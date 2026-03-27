@@ -6,13 +6,11 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import eu.pb4.playerdata.api.PlayerDataApi;
-import eu.pb4.sidebars.api.SidebarUtils;
-import eu.pb4.styledsidebars.CustomSidebar;
+import eu.pb4.styledsidebars.FabricPermissionBridge;
 import eu.pb4.styledsidebars.GenericModInfo;
 import eu.pb4.styledsidebars.ModInit;
 import eu.pb4.styledsidebars.config.ConfigManager;
 import eu.pb4.styledsidebars.config.SidebarHandler;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,9 +18,12 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.PermissionLevel;
+
 import java.util.Collection;
 import java.util.Locale;
 
+import static eu.pb4.styledsidebars.ModInit.id;
 import static net.minecraft.commands.Commands.literal;
 
 public class Commands {
@@ -30,17 +31,17 @@ public class Commands {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(
                     literal("styledsidebars")
-                            .requires(Permissions.require("styledsidebars.main", true))
+                            .requires(FabricPermissionBridge.require(id("main"), true))
                             .executes(Commands::about)
                             .then(literal("switch")
-                                    .requires(Permissions.require("styledsidebars.switch", true))
+                                    .requires(FabricPermissionBridge.require(id("switch"), true))
                                     .then(switchArgument("style")
                                             .executes(Commands::switchStyle)
                                     )
                             )
 
                             .then(literal("switchothers")
-                                    .requires(Permissions.require("styledsidebars.switch.others", 2))
+                                    .requires(FabricPermissionBridge.require(id("switch/others"), PermissionLevel.GAMEMASTERS))
                                     .then(net.minecraft.commands.Commands.argument("targets", EntityArgument.players())
                                             .then(switchArgument("style")
                                                     .executes(Commands::switchStyleOthers)
@@ -49,14 +50,14 @@ public class Commands {
                             )
 
                             .then(literal("reload")
-                                    .requires(Permissions.require("styledsidebars.reload", 3))
+                                    .requires(FabricPermissionBridge.require(id("reload"), PermissionLevel.ADMINS))
                                     .executes(Commands::reloadConfig)
                             )
             );
 
             dispatcher.register(
                     literal("sidebar")
-                            .requires(Permissions.require("styledsidebars.switch", true))
+                            .requires(FabricPermissionBridge.require(id("switch"), true))
                             .then(switchArgument("style")
                                     .executes(Commands::switchStyle)
                             )

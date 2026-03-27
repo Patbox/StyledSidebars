@@ -1,6 +1,7 @@
 package eu.pb4.styledsidebars;
 
 import eu.pb4.placeholders.api.PlaceholderContext;
+import eu.pb4.placeholders.api.ServerPlaceholderContext;
 import eu.pb4.placeholders.api.node.TextNode;
 import eu.pb4.sidebars.api.Sidebar;
 import eu.pb4.sidebars.api.SidebarInterface;
@@ -52,7 +53,7 @@ public class CustomSidebar implements SidebarInterface {
 
         this.title++;
 
-        return this.handler.title.get(title).toText(PlaceholderContext.of(handler.player).asParserContext(), true);
+        return this.handler.title.get(title).toComponent(ServerPlaceholderContext.of(handler.player).asParserContext(), true);
     }
 
     @Override
@@ -112,11 +113,11 @@ public class CustomSidebar implements SidebarInterface {
 
         var out = new ArrayList<SidebarLine>(list.size());
 
-        var context = PlaceholderContext.of(handler.player).asParserContext();
+        var context = ServerPlaceholderContext.of(handler.player).asParserContext();
         int size = list.size();
         for (var node : list) {
-            out.add(SidebarLine.create(--size, node.getA().toText(context), node.getB() == TextNode.empty()
-                    ? BlankFormat.INSTANCE : new FixedFormat(node.getB().toText(context)))
+            out.add(SidebarLine.create(--size, node.getA().toComponent(context), node.getB() == TextNode.empty()
+                    ? BlankFormat.INSTANCE : new FixedFormat(node.getB().toComponent(context)))
             );
         }
         return out;

@@ -15,7 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class Config {
     public static final ParserContext.Key<Function<String, @Nullable Component>> KEY = DynamicTextNode.key("styled_sidebars");
     public static final NodeParser DYNAMIC_PARSER = NodeParser.builder()
-            .globalPlaceholders()
+            .serverPlaceholders()
             .simplifiedTextFormat()
             .quickText()
             .placeholders(TagLikeParser.PLACEHOLDER_USER, KEY)
@@ -23,7 +23,7 @@ public class Config {
             .build();
 
     public static final NodeParser PARSER = NodeParser.builder()
-            .globalPlaceholders()
+            .serverPlaceholders()
             .simplifiedTextFormat()
             .quickText()
             .staticPreParsing()
@@ -38,10 +38,10 @@ public class Config {
     public Config(ConfigData data) {
         this.configData = data;
         this.switchMessage = DYNAMIC_PARSER.parseNode(data.messages.switchMsg);
-        this.unknownStyleMessage = PARSER.parseText(data.messages.unknownStyle, ParserContext.of());
+        this.unknownStyleMessage = PARSER.parseComponent(data.messages.unknownStyle, ParserContext.of());
     }
 
     public Component getSwitchMessage(ServerPlayer player, String target) {
-        return this.switchMessage.toText(ParserContext.of(KEY, Map.of("style", Component.literal(target))::get));
+        return this.switchMessage.toComponent(ParserContext.of(KEY, Map.of("style", Component.literal(target))::get));
     }
 }

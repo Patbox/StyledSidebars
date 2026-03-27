@@ -1,10 +1,6 @@
 package eu.pb4.styledsidebars.config;
 
-import eu.pb4.placeholders.api.Placeholders;
 import eu.pb4.placeholders.api.node.TextNode;
-import eu.pb4.placeholders.api.parsers.NodeParser;
-import eu.pb4.placeholders.api.parsers.StaticPreParser;
-import eu.pb4.placeholders.api.parsers.TextParserV1;
 import eu.pb4.predicate.api.MinecraftPredicate;
 import eu.pb4.predicate.api.PredicateContext;
 import eu.pb4.styledsidebars.config.data.SidebarDefinition;

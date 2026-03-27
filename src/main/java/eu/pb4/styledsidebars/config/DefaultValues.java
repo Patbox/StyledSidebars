@@ -2,6 +2,8 @@ package eu.pb4.styledsidebars.config;
 
 import eu.pb4.predicate.api.BuiltinPredicates;
 import eu.pb4.styledsidebars.config.data.SidebarDefinition;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.PermissionLevel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +107,7 @@ public class DefaultValues {
                         "                                     ",
                         "<gray>» <white>Memory:",
                         "<gray> ▪ <yellow>%server:used_ram% / <orange>%server:max_ram% ms"
-                ), BuiltinPredicates.modPermissionApi("group.admin", 3))
+                ), BuiltinPredicates.fabricPermission(Identifier.fromNamespaceAndPath("group", "admin"), PermissionLevel.ADMINS))
         );
 
         return data;
@@ -114,7 +116,7 @@ public class DefaultValues {
     public static SidebarDefinition examplePagesStyleData() {
         SidebarDefinition data = new SidebarDefinition();
         data.configName = "Paged example";
-        data.require = BuiltinPredicates.modPermissionApi("example.permission", 2);
+        data.require = BuiltinPredicates.fabricPermission(Identifier.fromNamespaceAndPath("local", "example_permission"), PermissionLevel.GAMEMASTERS);
         data.title = List.of("<b><dark_gray>→ <gr:blue:white>Example Paged Sidebar</gr> ←");
         data.pages = new ArrayList<>();
         data.pages.add(List.of(
