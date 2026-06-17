@@ -30,10 +30,10 @@ dependencies {
 	compileOnly("net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}")
 	localRuntime("net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}")
 
-	implementation include("eu.pb4:predicate-api:0.8.1+26.1")
-	implementation include("eu.pb4:placeholder-api:3.0.0-beta.2+26.1")
-	implementation include("eu.pb4:player-data-api:0.10.0+26.1")
-	implementation "me.lucko:fabric-permissions-api:0.7.0"
+	implementation include("eu.pb4:predicate-api:0.9.0+26.2")
+	implementation include("eu.pb4:placeholder-api:3.1.0-beta.1+26.2")
+	implementation include("eu.pb4:player-data-api:0.11.0+26.2")
+	compileOnly "me.lucko:fabric-permissions-api:0.7.0"
 	implementation include("eu.pb4:sidebar-api:0.6.0+26.1")
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.

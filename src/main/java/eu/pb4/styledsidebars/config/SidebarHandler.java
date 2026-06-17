@@ -1,5 +1,6 @@
 package eu.pb4.styledsidebars.config;
 
+import com.mojang.datafixers.util.Pair;
 import eu.pb4.placeholders.api.node.TextNode;
 import eu.pb4.predicate.api.MinecraftPredicate;
 import eu.pb4.predicate.api.PredicateContext;
@@ -8,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Tuple;
 
 public class SidebarHandler {
     public static final SidebarHandler FALLBACK = new SidebarHandler("", DefaultValues.EMPTY_STYLE);
@@ -47,7 +47,7 @@ public class SidebarHandler {
     }
 
     private static Line toLine(SidebarDefinition.Line line) {
-        return new Line(line.values().stream().map(x -> new Tuple<>(Config.PARSER.parseNode(x.getA()), Config.PARSER.parseNode(x.getB()))).toList(), line.require());
+        return new Line(line.values().stream().map(x -> new Pair<>(Config.PARSER.parseNode(x.getFirst()), Config.PARSER.parseNode(x.getSecond()))).toList(), line.require());
     }
 
     public boolean hasPermission(ServerPlayer player) {
@@ -58,7 +58,7 @@ public class SidebarHandler {
         return (this.lines != null && this.lines.isEmpty()) || (this.pages != null && this.pages.isEmpty()) || (this.pages == null && this.lines == null);
     }
 
-    public record Line(List<Tuple<TextNode, TextNode>> values, MinecraftPredicate predicate) {
+    public record Line(List<Pair<TextNode, TextNode>> values, MinecraftPredicate predicate) {
         public boolean hasPermission(ServerPlayer player) {
             return this.predicate == null || this.predicate.test(PredicateContext.of(player)).success();
         }

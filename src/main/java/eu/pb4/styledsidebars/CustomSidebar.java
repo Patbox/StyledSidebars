@@ -1,5 +1,6 @@
 package eu.pb4.styledsidebars;
 
+import com.mojang.datafixers.util.Pair;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.ServerPlaceholderContext;
 import eu.pb4.placeholders.api.node.TextNode;
@@ -14,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.BlankFormat;
 import net.minecraft.network.chat.numbers.FixedFormat;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.util.Tuple;
 
 public class CustomSidebar implements SidebarInterface {
     private SidebarHandler handler;
@@ -63,7 +63,7 @@ public class CustomSidebar implements SidebarInterface {
 
     @Override
     public List<SidebarLine> getLinesFor(ServerGamePacketListenerImpl handler) {
-        List<Tuple<TextNode, TextNode>> list = new ArrayList<>();
+        List<Pair<TextNode, TextNode>> list = new ArrayList<>();
 
         {
             List<SidebarHandler.Line> lines;
@@ -97,7 +97,7 @@ public class CustomSidebar implements SidebarInterface {
                 if (index >= list.size()) {
                     this.pos = 0;
                 }
-                var looping = new ArrayList<Tuple<TextNode, TextNode>>(list.size() * 2);
+                var looping = new ArrayList<Pair<TextNode, TextNode>>(list.size() * 2);
                 looping.addAll(list);
                 looping.addAll(list);
                 list = looping.subList(index, index + 14);
@@ -116,8 +116,8 @@ public class CustomSidebar implements SidebarInterface {
         var context = ServerPlaceholderContext.of(handler.player).asParserContext();
         int size = list.size();
         for (var node : list) {
-            out.add(SidebarLine.create(--size, node.getA().toComponent(context), node.getB() == TextNode.empty()
-                    ? BlankFormat.INSTANCE : new FixedFormat(node.getB().toComponent(context)))
+            out.add(SidebarLine.create(--size, node.getFirst().toComponent(context), node.getSecond() == TextNode.empty()
+                    ? BlankFormat.INSTANCE : new FixedFormat(node.getSecond().toComponent(context)))
             );
         }
         return out;
